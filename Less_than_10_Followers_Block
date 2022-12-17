@@ -1,0 +1,15 @@
+import instaloader
+
+# Create an Instaloader object
+L = instaloader.Instaloader()
+
+# Iterate through all accounts that you follow
+for account in L.get_following():
+   # Get the number of followers and photos for the account
+   followers = account.followers
+   photos = account.mediacount
+   
+   # If the account has less than 10 followers and less than 10 photos, block it
+   if followers < 10 and photos < 10:
+      L.block(account)
+      print(f"Blocked {account.username}")
