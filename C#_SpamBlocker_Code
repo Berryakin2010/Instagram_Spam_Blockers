@@ -1,0 +1,37 @@
+using InstagramApiSharp;
+using InstagramApiSharp.API;
+using InstagramApiSharp.API.Builder;
+
+// Replace YOUR_USERNAME and YOUR_PASSWORD with your Instagram login credentials
+var userSession = new UserSessionData
+{
+   UserName = "YOUR_USERNAME",
+   Password = "YOUR_PASSWORD"
+};
+
+// Create an InstagramApi object
+IInstaApi instaApi = InstaApiBuilder.CreateBuilder()
+                                    .SetUser(userSession)
+                                    .UseLogger(new DebugLogger(LogLevel.Exceptions))
+                                    .Build();
+
+// Login to Instagram
+await instaApi.LoginAsync();
+
+// Get the list of accounts that you follow
+var following = await instaApi.UserProcessor.GetUserFollowingAsync(instaApi.GetLoggedUser().LoggedInUser.Pk, paginationParameters: new PaginationParameters(1, 1000000));
+
+// Iterate through the list of accounts
+foreach (var account in following.Value)
+{
+   // Get the number of followers and photos for the account
+   var followers = account.FollowerCount;
+   var photos = account.MediaCount;
+   
+   // If the account has less than 10 followers and less than 10 photos, block it
+   if (followers < 10 && photos < 10)
+   {
+      await instaApi.UserProcessor.BlockUserAsync(account.Pk);
+      Console.WriteLine($"Blocked {account.Username}");
+   }
+}
