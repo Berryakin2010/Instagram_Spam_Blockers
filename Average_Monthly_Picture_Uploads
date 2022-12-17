@@ -1,0 +1,30 @@
+import instaloader
+
+# Create an Instaloader object
+L = instaloader.Instaloader()
+
+# Set the date range to November 2022
+start_date = "2022-11-01"
+end_date = "2022-11-30"
+
+# Set up a dictionary to store the picture upload counts for each account
+upload_counts = {}
+
+# Iterate through all posts in the specified date range
+for post in L.get_hashtag_posts(hashtag="instagram"):
+   # Check if the post was published in November 2022
+   if start_date <= post.date_utc.strftime("%Y-%m-%d") <= end_date:
+      # If the account has not yet been added to the dictionary, add it and set the upload count to 1
+      if post.owner_username not in upload_counts:
+         upload_counts[post.owner_username] = 1
+      # If the account is already in the dictionary, increment the upload count
+      else:
+         upload_counts[post.owner_username] += 1
+
+# Calculate the total number of picture uploads
+total_uploads = sum(upload_counts.values())
+
+# Calculate the average number of picture uploads per account
+average_uploads = total_uploads / len(upload_counts)
+
+print(f"Average monthly picture uploads per account: {average_uploads}")
